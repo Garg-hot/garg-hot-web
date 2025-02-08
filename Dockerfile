@@ -35,29 +35,28 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 # Configuration PHP pour la production
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Configuration d'opcache pour la production
+RUN { \
+    echo 'opcache.memory_consumption=128'; \
+    echo 'opcache.interned_strings_buffer=8'; \
+    echo 'opcache.max_accelerated_files=4000'; \
+    echo 'opcache.revalidate_freq=0'; \
+    echo 'opcache.fast_shutdown=1'; \
+    echo 'opcache.enable_cli=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers de composer en premier pour optimiser le cache
-COPY composer.json composer.lock ./
-
-# Installation des dépendances
-RUN composer install --prefer-dist --no-dev --no-scripts --no-progress --no-interaction
-
-# Copier le reste des fichiers de l'application
+# Copier les fichiers de l'application
 COPY . .
 
-# Installation des assets et nettoyage du cache
-RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
-RUN php bin/console cache:clear --env=prod --no-debug
-RUN php bin/console assets:install
-
-# Configuration des permissions
-RUN chown -R www-data:www-data var
-RUN chmod -R 777 var
+# Copier et configurer le script d'entrée
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
 
 # Exposer le port
 EXPOSE 9000
 
-# Démarrer PHP-FPM
-CMD ["php-fpm"]
+# Utiliser le script d'entrée
+ENTRYPOINT ["docker-entrypoint"]
