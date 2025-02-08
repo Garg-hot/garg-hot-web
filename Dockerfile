@@ -1,62 +1,63 @@
-# Utiliser une version spécifique de PHP-FPM
-FROM php:8.2-fpm
+# Utiliser PHP 8.2.12 CLI
+FROM php:8.2.12-cli
 
-# Installation des dépendances système
+# Installer les dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
     git \
     curl \
     libpng-dev \
-    libonig-dev \
-    libxml2-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     libzip-dev \
-    zip \
-    unzip \
-    nodejs \
-    npm
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        gd \
+        pdo \
+        pdo_mysql \
+        opcache \
+        zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Installer Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Installation des extensions PHP nécessaires pour Symfony
-RUN docker-php-ext-install \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip \
-    intl \
-    opcache
-
-# Installation de Composer de manière sécurisée
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
-
-# Configuration PHP pour la production
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Configuration d'opcache pour la production
-RUN { \
-    echo 'opcache.memory_consumption=128'; \
-    echo 'opcache.interned_strings_buffer=8'; \
-    echo 'opcache.max_accelerated_files=4000'; \
-    echo 'opcache.revalidate_freq=0'; \
-    echo 'opcache.fast_shutdown=1'; \
-    echo 'opcache.enable_cli=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+# Configuration de Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/composer
 
 # Définir le répertoire de travail
-WORKDIR /var/www/html
+WORKDIR /app/garg-hot-web
 
-# Copier les fichiers de l'application
+# Copier les fichiers de configuration de Composer
+COPY composer.json composer.lock ./
+
+# Configurer Composer pour autoriser les plugins
+RUN composer config --no-plugins allow-plugins.symfony/flex true \
+    && composer config --no-plugins allow-plugins.symfony/runtime true
+
+# Installer les dépendances
+RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-scripts
+
+# Copier le reste des fichiers du projet
 COPY . .
 
-# Copier et configurer le script d'entrée
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+# Configuration de l'environnement
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+# Permissions et configuration finale
+RUN set -eux; \
+    mkdir -p var/cache var/log; \
+    composer dump-autoload --optimize --no-dev --classmap-authoritative; \
+    chmod -R 777 var; \
+    chmod +x bin/console; \
+    sync
 
 # Exposer le port
-EXPOSE 9000
+EXPOSE 8000
 
-# Utiliser le script d'entrée
-ENTRYPOINT ["docker-entrypoint"]
+# Commande par défaut
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
