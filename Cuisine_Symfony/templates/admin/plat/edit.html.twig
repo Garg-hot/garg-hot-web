@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title "plat :" ~ plat.nom %}
+
+{% block body %}
+    <h1>Modifier le plat: {{ plat.nom }}</h1>
+    {{ form(form) }}
+
+{% endblock %}

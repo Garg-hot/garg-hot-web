@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title 'Categories' %}
+
+{% block body %}
+    <p>
+        <a href="{{ path('admin.categorie.create') }}">Ajouter une categorie</a>
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(categories, 'id', 'c.id') }}</th>
+                <th>{{ knp_pagination_sortable(categories, 'nom', 'c.nom') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for categorie in categories %}
+                <tr>
+                    <td>{{ categorie.id }}</td>
+                    <td>{{ categorie.nom }}</td>
+                    <td>
+                        <a  href="{{ path('admin.categorie.edit', {'id': categorie.id }) }}">Editer</a>
+                        <form action="{{ path('admin.categorie.delete', {'id': categorie.id }) }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {{ knp_pagination_render(categories) }}
+    </div>
+{% endblock %}
+ 

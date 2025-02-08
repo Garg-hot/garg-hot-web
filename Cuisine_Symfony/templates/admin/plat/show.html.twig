@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title "plat :" ~ plat.nom %}
+
+{% block body %}
+    <h1>Details plats: {{ plat.nom }}</h1>
+    <P>
+        {{ plat.description | nl2br }}
+    </P>
+
+    {# {{ slug | upper}} de {{ person.firstname ~ person.lastname  }}  #}
+{% endblock %}

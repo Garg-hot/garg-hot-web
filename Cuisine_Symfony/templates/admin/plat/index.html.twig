@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tous les plats!{% endblock %}
+
+{% block body %}
+    <h1>Tous les plats</h1>
+    <P>
+        <a href="{{ path('admin.plat.create') }}">Ajouter un nouveau plat</a>
+    </P>
+    <table >
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th scope="col">Categorie</th> 
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for plat in plats %}
+            <tr>
+                <td>
+                    <a href="{{ path('admin.plat.show', {'slug': plat.slug, 'id': plat.id }) }}">{{ plat.nom }}</a>
+                </td>
+                <td>{{ plat.categorie.nom | default('')}}</td>
+                <td>
+                    <div>
+                        <a href="{{ path('admin.plat.edit', {'id': plat.id }) }}">Editer</a>
+                        <form action="{{ path('admin.plat.delete', {'id': plat.id }) }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </div>
+                </td>
+            <tr>
+    {% endfor %}
+        </tbody>
+    </table>
+
+    <h5>plats de moins de {{minute_max }}min</h5>
+
+     <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th scope="col">Categorie</th> 
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for plat in plats_10min %}
+            <tr>
+                <td>
+                    <a href="{{ path('admin.plat.edit', {id: plat.id }) }}">{{ plat.nom }}</a>
+                </td>
+                <td>{{ plat.categorie.nom | default('')}}</td>
+                <td>
+                    <div>
+                        <a href="{{ path('admin.plat.edit', {'id': plat.id }) }}">Editer</a>
+                        <form action="{{ path('admin.plat.delete', {'id': plat.id }) }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    <div>
+                </td>
+            <tr>
+    {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}
+ 
