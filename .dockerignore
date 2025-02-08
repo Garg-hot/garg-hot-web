@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.*
+var/
+vendor/
+node_modules/
+tests/
+*.md
+docker-compose.yml
+docker-compose.yaml
+compose.yaml
+compose.override.yaml
+Dockerfile
+.dockerignore
