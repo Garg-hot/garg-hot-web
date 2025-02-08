@@ -65,6 +65,7 @@ class Plat
     private Collection $ingredients;
 
     #[ORM\ManyToOne(inversedBy: 'plat')]
+    #[Groups(['plat.index'])]
     private ?Prix $prix = null;
 
     #[ORM\Column(length: 255)]
