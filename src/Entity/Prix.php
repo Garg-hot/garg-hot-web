@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\PrixRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PrixRepository::class)]
 class Prix
@@ -14,23 +14,28 @@ class Prix
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['plat.index','prix.index'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column]
+    #[Groups(['prix.index'])]
     private ?\DateTimeInterface $datePrix = null;
 
     /**
-     * @var Collection<int, Plat>
+     * Le plat associé à ce prix
      */
-    #[ORM\OneToMany(targetEntity: Plat::class, mappedBy: 'prix')]
-    private Collection $plat;
+    #[ORM\ManyToOne(targetEntity: Plat::class, inversedBy: 'prix')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['prix.index'])]
+    private ?Plat $plat = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['prix.index', 'plat.index'])]
     private ?string $montant = null;
 
     public function __construct()
     {
-        $this->plat = new ArrayCollection();
+        $this->datePrix = new \DateTime();
     }
 
     public function getId(): ?int
@@ -50,33 +55,14 @@ class Prix
         return $this;
     }
 
-    /**
-     * @return Collection<int, Plat>
-     */
-    public function getPlat(): Collection
+    public function getPlat(): ?Plat
     {
         return $this->plat;
     }
 
-    public function addPlat(Plat $plat): static
+    public function setPlat(?Plat $plat): static
     {
-        if (!$this->plat->contains($plat)) {
-            $this->plat->add($plat);
-            $plat->setPrix($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlat(Plat $plat): static
-    {
-        if ($this->plat->removeElement($plat)) {
-            // set the owning side to null (unless already changed)
-            if ($plat->getPrix() === $this) {
-                $plat->setPrix(null);
-            }
-        }
-
+        $this->plat = $plat;
         return $this;
     }
 

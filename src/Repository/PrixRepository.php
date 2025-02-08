@@ -40,4 +40,15 @@ class PrixRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findLatestPrixForPlat(int $platId): ?Prix
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.plat = :platId')
+            ->setParameter('platId', $platId)
+            ->orderBy('p.datePrix', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
