@@ -17,10 +17,10 @@ class Prix
     #[Groups(['plat.index','prix.index'])]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: "datetime")]
     #[Groups(['prix.index'])]
     private ?\DateTimeInterface $datePrix = null;
-
+    
     /**
      * Le plat associé à ce prix
      */

@@ -67,6 +67,10 @@ class Plat
     #[ORM\ManyToOne(inversedBy: 'plat')]
     private ?Prix $prix = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['plat.index'])]
+    private ?string $image = null;
+
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
@@ -193,6 +197,18 @@ class Plat
     public function setPrix(?Prix $prix): static
     {
         $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
