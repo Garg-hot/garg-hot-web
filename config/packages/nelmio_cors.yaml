@@ -28,16 +28,15 @@
 
 nelmio_cors:
     defaults:
-        allow_credentials: false
-        allow_origin: ['*']
-        allow_headers: ['content-type', 'authorization']
-        expose_headers: ['Link']
-        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE']
+        allow_credentials: true
+        allow_origin: ['http://localhost:5174']  # Remplacez par l'URL de votre frontend
+        allow_headers: ['Content-Type', 'Authorization']
+        allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
         max_age: 3600
     paths:
-        '^/api/':
-            allow_origin: ['http://localhost:5173','https://garg-hot-web.onrender.com']
-            allow_headers: ['content-type', 'authorization']
+        '^/api/':  # Applique cette configuration uniquement aux routes commençant par /api/
+            allow_origin: ['*']  # Vous pouvez restreindre cela à une origine spécifique
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+            allow_headers: ['Content-Type', 'Authorization']
+            expose_headers: ['Link']
             max_age: 3600
-
