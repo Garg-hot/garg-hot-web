@@ -36,7 +36,7 @@ nelmio_cors:
         max_age: 3600
     paths:
         '^/api/':
-            allow_origin: ['http://localhost:5173']
+            allow_origin: ['http://localhost:5173','https://garg-hot-web.onrender.com']
             allow_headers: ['content-type', 'authorization']
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
             max_age: 3600
