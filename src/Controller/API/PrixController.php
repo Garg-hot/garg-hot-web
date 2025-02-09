@@ -47,7 +47,7 @@ public function create(
         $data = json_decode($request->getContent(), true);
 
         // Vérifier si les champs requis sont présents
-        if (!isset($data['plat']['id']) || !isset($data['montant'])) {
+        if (!isset($data['plat']['nom']) || !isset($data['montant'])) {
             return $this->json([
                 'error' => 'Les champs platId et montant sont requis'
             ], Response::HTTP_BAD_REQUEST);
