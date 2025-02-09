@@ -48,6 +48,7 @@ class IngredientController extends AbstractController
             // Créer un nouvel ingrédient
             $ingredient = new Ingredient();
             $ingredient->setNom($data['nom']);
+            $ingredient->setSprite($data['sprite']);
 
             // Valider les données de l'ingrédient
             $errors = $validator->validate($ingredient);

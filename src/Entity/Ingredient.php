@@ -89,8 +89,10 @@ class Ingredient
 
     public function setSprite(string $sprite): static
     {
+        if (empty($sprite)) {
+            throw new \Exception("La valeur de sprite ne peut pas être vide");
+        }
         $this->sprite = $sprite;
-
         return $this;
     }
 }
