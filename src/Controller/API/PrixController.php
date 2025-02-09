@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\Prix;
 use App\Repository\PrixRepository;
 use App\Repository\PlatRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,57 +35,62 @@ class PrixController extends AbstractController
     }
 
     #[Route("/api/prix/", methods: ['POST'])]
-    public function create(
-        Request $request,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        PlatRepository $platRepository
-    ): Response {
-        try {
-            $data = json_decode($request->getContent(), true);
+public function create(
+    Request $request,
+    SerializerInterface $serializer,
+    ValidatorInterface $validator,
+    EntityManagerInterface $entityManager,
+    PlatRepository $platRepository
+): Response {
+    try {
+        // Décoder le contenu JSON de la requête
+        $data = json_decode($request->getContent(), true);
 
-            if (!isset($data['platId']) || !isset($data['montant'])) {
-                return $this->json([
-                    'error' => 'Les champs platId et montant sont requis'
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            $plat = $platRepository->find($data['platId']);
-            if (!$plat) {
-                return $this->json([
-                    'error' => 'Plat non trouvé'
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            $prix = new Prix();
-            $prix->setMontant($data['montant']);
-            $prix->setPlat($plat);
-
-            // Valider les données
-            $errors = $validator->validate($prix);
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                foreach ($errors as $error) {
-                    $errorMessages[] = $error->getMessage();
-                }
-                return $this->json([
-                    'errors' => $errorMessages
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            $entityManager->persist($prix);
-            $entityManager->flush();
-
-            return $this->json($prix, Response::HTTP_CREATED, [], [
-                'groups' => ['prix.index']
-            ]);
-        } catch (\Exception $e) {
+        // Vérifier si les champs requis sont présents
+        if (!isset($data['plat']['id']) || !isset($data['montant'])) {
             return $this->json([
-                'error' => $e->getMessage()
+                'error' => 'Les champs platId et montant sont requis'
             ], Response::HTTP_BAD_REQUEST);
         }
+
+        // Récupérer le plat par son ID
+        $plat = $platRepository->find($data['plat']['id']);
+        if (!$plat) {
+            return $this->json([
+                'error' => 'Plat non trouvé'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Créer un nouvel objet Prix
+        $prix = new Prix();
+        $prix->setMontant($data['montant']);
+        $prix->setPlat($plat);
+
+        // Valider les données
+        $errors = $validator->validate($prix);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+            return $this->json([
+                'errors' => $errorMessages
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Persister le nouvel objet Prix
+        $entityManager->persist($prix);
+        $entityManager->flush();
+
+        return $this->json($prix, Response::HTTP_CREATED, [], [
+            'groups' => ['prix.index']
+        ]);
+    } catch (\Exception $e) {
+        return $this->json([
+            'error' => $e->getMessage()
+        ], Response::HTTP_BAD_REQUEST);
     }
+}
 
     #[Route("/api/prix/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['PUT'])]
     public function edit(

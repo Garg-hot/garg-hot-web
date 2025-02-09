@@ -14,16 +14,13 @@ class Prix
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['plat.index','prix.index'])]
+    #[Groups(['plat.index', 'prix.index'])]
     private ?int $id = null;
 
     #[ORM\Column(type: "datetime")]
     #[Groups(['prix.index'])]
     private ?\DateTimeInterface $datePrix = null;
-    
-    /**
-     * Le plat associé à ce prix
-     */
+
     #[ORM\ManyToOne(targetEntity: Plat::class, inversedBy: 'prix')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['prix.index'])]
@@ -55,9 +52,12 @@ class Prix
         return $this;
     }
 
-    public function getPlat(): ?Plat
+    public function getPlat(): ?array // Retourne les détails du plat
     {
-        return $this->plat;
+        return $this->plat ? [
+            'id' => $this->plat->getId(),
+            'name' => $this->plat->getNom(), // Assurez-vous que getName() existe dans Plat
+        ] : null;
     }
 
     public function setPlat(?Plat $plat): static
