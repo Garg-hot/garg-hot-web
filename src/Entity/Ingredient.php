@@ -30,6 +30,10 @@ class Ingredient
     #[ORM\ManyToMany(targetEntity: Plat::class, mappedBy: 'ingredients',cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $plats;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['ingredient.index', 'ingredient.create', 'plat.index'])]
+    private ?string $sprite = null;
+
     public function __construct()
     {
         $this->plats = new ArrayCollection();
@@ -74,6 +78,18 @@ class Ingredient
         if ($this->plats->removeElement($plat)) {
             $plat->removeIngredient($this);
         }
+
+        return $this;
+    }
+
+    public function getSprite(): ?string
+    {
+        return $this->sprite;
+    }
+
+    public function setSprite(string $sprite): static
+    {
+        $this->sprite = $sprite;
 
         return $this;
     }

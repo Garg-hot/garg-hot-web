@@ -22,7 +22,7 @@ class CommandeRepository extends ServiceEntityRepository
             ->leftJoin('p.ingredients', 'i')->addSelect('i')
             ->getQuery()
             ->getResult();
-}
+    }
 
 
     //    /**
