@@ -72,9 +72,16 @@ class Plat
     #[Groups(['plat.index'])]
     private ?string $image = null;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'plats')]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -210,6 +217,33 @@ class Plat
     public function setImage(string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->addPlat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            $commande->removePlat($this);
+        }
 
         return $this;
     }
