@@ -81,56 +81,65 @@ class IngredientController extends AbstractController
     }
 
     #[Route("/api/ingredient/edit/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['PUT', 'PATCH'])]
-    public function edit(
-        int $id,
-        Request $request,
-        IngredientRepository $ingredientRepository,
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $ingredient = $ingredientRepository->find($id);
+public function edit(
+    int $id,
+    Request $request,
+    IngredientRepository $ingredientRepository,
+    ValidatorInterface $validator,
+    EntityManagerInterface $entityManager
+): Response {
+    $ingredient = $ingredientRepository->find($id);
 
-        if (!$ingredient) {
-            return $this->json([
-                'error' => 'Ingrédient non trouvé.'
-            ], Response::HTTP_NOT_FOUND);
+    if (!$ingredient) {
+        return $this->json([
+            'error' => 'Ingrédient non trouvé.'
+        ], Response::HTTP_NOT_FOUND);
+    }
+
+    try {
+        $data = json_decode($request->getContent(), true);
+
+        // Log des données reçues
+        error_log("Data received: " . print_r($data, true));
+
+        // Mise à jour des données
+        if (isset($data['nom'])) {
+            $ingredient->setNom($data['nom']);
         }
 
-        try {
-            $data = json_decode($request->getContent(), true);
+        // Log après mise à jour
+        error_log("Updated ingredient: " . print_r($ingredient, true));
 
-            // Mise à jour des données
-            if (isset($data['nom'])) {
-                $ingredient->setNom($data['nom']);
+        // Validation des données
+        $errors = $validator->validate($ingredient);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
             }
-            
-
-            // Validation des données
-            $errors = $validator->validate($ingredient);
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                foreach ($errors as $error) {
-                    $errorMessages[] = $error->getMessage();
-                }
-                return $this->json([
-                    'errors' => $errorMessages
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            $entityManager->flush();
-
             return $this->json([
-                'message' => 'L\'ingrédient a été mis à jour avec succès.',
-                'ingredient' => $ingredient
-            ], Response::HTTP_OK, [], ['groups' => ['ingredient.index']]);
-
-        } catch (\Exception $e) {
-            return $this->json([
-                'error' => 'Erreur lors de la mise à jour de l\'ingrédient.',
-                'message' => $e->getMessage()
+                'errors' => $errorMessages
             ], Response::HTTP_BAD_REQUEST);
         }
+
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'L\'ingrédient a été mis à jour avec succès.',
+            'ingredient' => $ingredient
+        ], Response::HTTP_OK, [], ['groups' => ['ingredient.index']]);
+
+    } catch (\Exception $e) {
+        // Log de l'exception
+        error_log("Exception: " . $e->getMessage());
+
+        return $this->json([
+            'error' => 'Erreur lors de la mise à jour de l\'ingrédient.',
+            'message' => $e->getMessage()
+        ], Response::HTTP_BAD_REQUEST);
     }
+}
+
 
     #[Route("/api/ingredient/delete/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['DELETE'])]
     public function delete(
