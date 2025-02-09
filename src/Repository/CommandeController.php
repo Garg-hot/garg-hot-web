@@ -42,7 +42,6 @@ class CommandeController extends AbstractController
         
         // Validation et création de la commande
         $commande = new Commande();
-        $commande->setIdUtilisateur($data['idUtilisateur']);
         $commande->setCreatedAt(new \DateTimeImmutable());
         $commande->setStatut($data['statut']);
         $commande->setIdClient($data['id_client']);
@@ -67,9 +66,6 @@ class CommandeController extends AbstractController
         $data = json_decode($request->getContent(), true);
         
         // Mise à jour des champs de la commande
-        if (isset($data['idUtilisateur'])) {
-            $commande->setIdUtilisateur($data['idUtilisateur']);
-        }
         if (isset($data['statut'])) {
             $commande->setStatut($data['statut']);
         }
