@@ -60,7 +60,7 @@ class Plat
     /**
      * @var Collection<int, Ingredient>
      */
-    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'plats')]
+    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'plats',cascade: ['persist'])]
     #[Groups(['plat.index','plat.create','ingredient.index','commande.index'])]
     private Collection $ingredients;
 

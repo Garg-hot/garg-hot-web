@@ -32,7 +32,7 @@ class Commande
     /**
      * @var Collection<int, Plat>
      */
-    #[ORM\ManyToMany(targetEntity: Plat::class, inversedBy: 'commandes')]
+    #[ORM\ManyToMany(targetEntity: Plat::class, inversedBy: 'commandes',cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['commande.index', 'commande.show'])]
     private Collection $plats;
 
