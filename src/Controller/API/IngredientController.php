@@ -48,7 +48,7 @@ class IngredientController extends AbstractController
             // Créer un nouvel ingrédient
             $ingredient = new Ingredient();
             $ingredient->setNom($data['nom']);
-            $ingredient->setSprite($data['sprite']);
+            $ingredient->setSprite($data['sprite'] ?? 'porc.png');
 
             // Valider les données de l'ingrédient
             $errors = $validator->validate($ingredient);
@@ -105,6 +105,11 @@ public function edit(
         // Mise à jour des données
         if (isset($data['nom'])) {
             $ingredient->setNom($data['nom']);
+            if (!isset($data['sprite']) || $data['sprite'] === null) {
+                $ingredient->setSprite('porc.png');
+            } else {
+                $ingredient->setSprite($data['sprite']);
+            }
         }
 
         // Log après mise à jour
