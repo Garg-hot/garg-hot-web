@@ -56,7 +56,7 @@ class Prix
     {
         return $this->plat ? [
             'id' => $this->plat->getId(),
-            'name' => $this->plat->getNom(), // Assurez-vous que getName() existe dans Plat
+            'nom' => $this->plat->getNom(), // Assurez-vous que getName() existe dans Plat
         ] : null;
     }
 
