@@ -54,7 +54,7 @@ class Plat
     private ?int $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'plats',cascade: ['persist'])]
-    #[Groups(['plat.index','plat.create','categorie.index'])]
+    #[Groups(['plat.index','plat.create'])]
     private ?Categorie $categorie = null;
 
     /**
