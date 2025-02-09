@@ -15,9 +15,6 @@ class Commande
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $idUtilisateur = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -41,18 +38,6 @@ class Commande
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdUtilisateur(): ?string
-    {
-        return $this->idUtilisateur;
-    }
-
-    public function setIdUtilisateur(string $idUtilisateur): static
-    {
-        $this->idUtilisateur = $idUtilisateur;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
