@@ -6,6 +6,7 @@ use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
@@ -13,26 +14,32 @@ class Commande
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['commande.index', 'commande.show'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['commande.index', 'commande.show'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['commande.index', 'commande.show'])]
     private ?int $statut = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['commande.index', 'commande.show'])]
     private ?string $id_client = null;
 
     /**
      * @var Collection<int, Plat>
      */
     #[ORM\ManyToMany(targetEntity: Plat::class, inversedBy: 'commandes')]
+    #[Groups(['commande.index', 'commande.show'])]
     private Collection $plats;
 
     public function __construct()
     {
         $this->plats = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable(); // Initialiser la date de création
     }
 
     public function getId(): ?int

@@ -17,7 +17,7 @@ class CommandeController extends AbstractController
     #[Route("/api/commandes/", methods: ['GET'])]
     public function index(CommandeRepository $commandeRepository): Response
     {
-        $commandes = $commandeRepository->findAll();
+        $commandes = $commandeRepository->findAllWithRelations();
         return $this->json($commandes, 200, [], [
             'groups' => ['commande.index']
         ]);
@@ -86,5 +86,18 @@ class CommandeController extends AbstractController
         $commandeRepository->remove($commande, true);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+    #[Route("/api/commandes/{id}/plats", methods: ['GET'])]
+    public function getPlatsByCommandeId(int $id, CommandeRepository $commandeRepository): Response
+    {
+        $commande = $commandeRepository->find($id);
+        
+        if (!$commande) {
+            return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json($commande->getPlats(), 200, [], [
+            'groups' => ['plat.index']
+        ]);
     }
 }

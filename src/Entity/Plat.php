@@ -20,12 +20,12 @@ class Plat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['plat.index','categorie.index'])]
+    #[Groups(['plat.index','categorie.index','commande.index'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5, minMessage: 'Le nom doit contenir au moins 5 caractères')]
-    #[Groups(['plat.index','plat.create','categorie.index'])]
+    #[Groups(['plat.index','plat.create','categorie.index','commande.index'])]
     private ?string $nom = '';
 
     #[ORM\Column(length: 255)]
@@ -61,7 +61,7 @@ class Plat
      * @var Collection<int, Ingredient>
      */
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'plats')]
-    #[Groups(['plat.index','plat.create','ingredient.index'])]
+    #[Groups(['plat.index','plat.create','ingredient.index','commande.index'])]
     private Collection $ingredients;
 
     #[ORM\ManyToOne(inversedBy: 'plat')]
@@ -76,6 +76,7 @@ class Plat
      * @var Collection<int, Commande>
      */
     #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'plats')]
+    #[Groups(['plat.index', 'commande.show'])]
     private Collection $commandes;
 
     public function __construct()

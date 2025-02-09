@@ -21,7 +21,7 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['ingredient.index', 'ingredient.create', 'plat.index'])]
+    #[Groups(['ingredient.index', 'ingredient.create', 'plat.index','commande.index'])]
     private ?string $nom = null;
 
     /**

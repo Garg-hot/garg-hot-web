@@ -15,6 +15,15 @@ class CommandeRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Commande::class);
     }
+    public function findAllWithRelations(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.plats', 'p')->addSelect('p')
+            ->leftJoin('p.ingredients', 'i')->addSelect('i')
+            ->getQuery()
+            ->getResult();
+}
+
 
     //    /**
     //     * @return Commande[] Returns an array of Commande objects
