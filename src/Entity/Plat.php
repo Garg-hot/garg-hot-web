@@ -64,10 +64,6 @@ class Plat
     #[Groups(['plat.index','plat.create','ingredient.index','commande.index'])]
     private Collection $ingredients;
 
-    #[ORM\ManyToOne(inversedBy: 'plat')]
-    #[Groups(['plat.index'])]
-    private ?Prix $prix = null;
-
     #[ORM\Column(length: 255)]
     #[Groups(['plat.index'])]
     private ?string $image = null;
@@ -194,18 +190,6 @@ class Plat
     public function removeIngredient(Ingredient $ingredient): static
     {
         $this->ingredients->removeElement($ingredient);
-
-        return $this;
-    }
-
-    public function getPrix(): ?Prix
-    {
-        return $this->prix;
-    }
-
-    public function setPrix(?Prix $prix): static
-    {
-        $this->prix = $prix;
 
         return $this;
     }
