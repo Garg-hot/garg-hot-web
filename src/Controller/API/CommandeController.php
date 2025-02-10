@@ -55,7 +55,7 @@ class CommandeController extends AbstractController
     public function show(string $id, CommandeRepository $commandeRepository): Response
     {
         // Recherche de la commande par le token Firebase
-        $commande = $commandeRepository->findOneBy(['token' => $id]);
+        $commande = $commandeRepository->findOneBy(['id_client' => $id]);
     
         if (!$commande) {
             return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
