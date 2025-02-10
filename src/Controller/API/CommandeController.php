@@ -55,7 +55,7 @@ class CommandeController extends AbstractController
     public function show(string $id, CommandeRepository $commandeRepository): Response
     {
         // Recherche de la commande par le token Firebase
-        $commande = $commandeRepository->findOneBy(['id_client' => $id]);
+        $commande = $commandeRepository->findOneBy(['token' => $id]);
     
         if (!$commande) {
             return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
@@ -65,6 +65,7 @@ class CommandeController extends AbstractController
             'groups' => ['commande.index']
         ]);
     }
+    
     
     #[Route("/api/commandes/{id}", methods: ['DELETE'])]
     public function delete(Commande $commande, CommandeRepository $commandeRepository): Response
