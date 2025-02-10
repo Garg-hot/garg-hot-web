@@ -14,26 +14,26 @@ class Commande
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['commande.index', 'commande.show'])]
+    #[Groups(['commande.index', 'commande.show','vente.index', 'vente.show'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['commande.index', 'commande.show'])]
+    #[Groups(['commande.index', 'commande.show','vente.index', 'vente.show'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups(['commande.index', 'commande.show'])]
+    #[Groups(['commande.index', 'commande.show','vente.index', 'vente.show'])]
     private ?int $statut = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['commande.index', 'commande.show'])]
+    #[Groups(['commande.index', 'commande.show','vente.index', 'vente.show'])]
     private ?string $id_client = null;
 
     /**
      * @var Collection<int, Plat>
      */
     #[ORM\ManyToMany(targetEntity: Plat::class, inversedBy: 'commandes',cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['commande.index', 'commande.show'])]
+    #[Groups(['commande.index', 'commande.show','vente.index', 'vente.show'])]
     private Collection $plats;
 
     public function __construct()
