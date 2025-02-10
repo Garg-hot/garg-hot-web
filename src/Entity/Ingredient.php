@@ -34,6 +34,10 @@ class Ingredient
     #[Groups(['ingredient.index', 'ingredient.create', 'plat.index'])]
     private ?string $sprite = null;
 
+    #[Assert\Type("integer")]
+    #[ORM\Column(type: 'integer')]
+    private int $stock=0;
+
     public function __construct()
     {
         $this->plats = new ArrayCollection();
@@ -93,6 +97,18 @@ class Ingredient
             throw new \Exception("La valeur de sprite ne peut pas être vide");
         }
         $this->sprite = $sprite;
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
+
         return $this;
     }
 }

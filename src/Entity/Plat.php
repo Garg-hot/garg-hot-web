@@ -72,16 +72,13 @@ class Plat
      * @var Collection<int, Commande>
      */
     #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'plats')]
-    #[Groups(['plat.index', 'commande.show'])]
+    #[Groups(['commande.index','commande.show'])]
     private Collection $commandes;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Groups(['plat.index','plat.create'])]
     private ?string $prix = null;
 
-    #[ORM\Column]
-    #[Groups(['plat.index','plat.create'])]
-    private ?int $stock = null;
 
     public function __construct()
     {
@@ -249,18 +246,6 @@ class Plat
     public function setPrix(string $prix): static
     {
         $this->prix = $prix;
-
-        return $this;
-    }
-
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): static
-    {
-        $this->stock = $stock;
 
         return $this;
     }

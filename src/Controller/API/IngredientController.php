@@ -49,7 +49,8 @@ class IngredientController extends AbstractController
             $ingredient = new Ingredient();
             $ingredient->setNom($data['nom']);
             $ingredient->setSprite($data['sprite'] ?? 'porc.png');
-
+            $ingredient->setStock($data['stock'] ?? 0);  
+            
             // Valider les données de l'ingrédient
             $errors = $validator->validate($ingredient);
             if (count($errors) > 0) {
