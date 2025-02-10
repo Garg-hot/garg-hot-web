@@ -77,7 +77,7 @@ class Plat
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Groups(['plat.index','plat.create'])]
-    private ?string $prix = null;
+    private string $prix = '0.00';
 
 
     public function __construct()
@@ -238,15 +238,14 @@ class Plat
         return $this;
     }
 
-    public function getPrix(): ?string
+    public function getPrix(): string
     {
         return $this->prix;
     }
-
+    
     public function setPrix(string $prix): static
     {
-        $this->prix = $prix;
-
+        $this->prix = number_format((float) $prix, 2, '.', '');
         return $this;
     }
 }
