@@ -75,6 +75,14 @@ class Plat
     #[Groups(['plat.index', 'commande.show'])]
     private Collection $commandes;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['plat.index','plat.create'])]
+    private ?string $prix = null;
+
+    #[ORM\Column]
+    #[Groups(['plat.index','plat.create'])]
+    private ?int $stock = null;
+
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
@@ -229,6 +237,30 @@ class Plat
         if ($this->commandes->removeElement($commande)) {
             $commande->removePlat($this);
         }
+
+        return $this;
+    }
+
+    public function getPrix(): ?string
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(string $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
 
         return $this;
     }
