@@ -81,69 +81,60 @@ class IngredientController extends AbstractController
     }
 
     #[Route("/api/ingredient/edit/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['PUT', 'PATCH'])]
-public function edit(
-    int $id,
-    Request $request,
-    IngredientRepository $ingredientRepository,
-    ValidatorInterface $validator,
-    EntityManagerInterface $entityManager
-): Response {
-    $ingredient = $ingredientRepository->find($id);
-
-    if (!$ingredient) {
-        return $this->json([
-            'error' => 'Ingrédient non trouvé.'
-        ], Response::HTTP_NOT_FOUND);
-    }
-
-    try {
-        $data = json_decode($request->getContent(), true);
-
-        // Log des données reçues
-        error_log("Data received: " . print_r($data, true));
-
-        // Mise à jour des données
-        if (isset($data['nom'])) {
-            $ingredient->setNom($data['nom']);
-            if (!isset($data['sprite']) || $data['sprite'] === null) {
-                $ingredient->setSprite('porc.png');
-            } else {
-                $ingredient->setSprite($data['sprite']);
-            }
-        }
-
-        // Log après mise à jour
-        error_log("Updated ingredient: " . print_r($ingredient, true));
-
-        // Validation des données
-        $errors = $validator->validate($ingredient);
-        if (count($errors) > 0) {
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                $errorMessages[] = $error->getMessage();
-            }
+    public function edit(
+        int $id,
+        Request $request,
+        IngredientRepository $ingredientRepository,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $ingredient = $ingredientRepository->find($id);
+    
+        if (!$ingredient) {
             return $this->json([
-                'errors' => $errorMessages
+                'error' => 'Ingrédient non trouvé.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+    
+        try {
+            $data = $request->getContent();
+            $serializer->deserialize($data, Ingredient::class, 'json', ['object_to_populate' => $ingredient]);
+    
+            // Vérification et mise à jour de `sprite`
+            $requestData = json_decode($data, true);
+            if (isset($requestData['sprite'])) {
+                $ingredient->setSprite($requestData['sprite']);
+            } elseif (!$ingredient->getSprite()) {
+                // Si le sprite est vide après la désérialisation, on met une valeur par défaut
+                $ingredient->setSprite('porc.png');
+            }
+            
+            // Validation des données
+            $errors = $validator->validate($ingredient);
+            if (count($errors) > 0) {
+                return $this->json($errors, Response::HTTP_BAD_REQUEST);
+            }
+    
+            // Mise à jour de la date de modification
+            $ingredient->setUpdatedAt(new \DateTimeImmutable());
+    
+            $entityManager->flush();
+    
+            return $this->json([
+                'message' => 'L\'ingrédient a été mis à jour avec succès.',
+                'ingredient' => $ingredient
+            ], Response::HTTP_OK, [], ['groups' => ['ingredient.index']]);
+    
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Erreur lors de la mise à jour de l\'ingrédient.',
+                'message' => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
-
-        $entityManager->flush();
-
-        return $this->json([
-            'message' => 'L\'ingrédient a été mis à jour avec succès.',
-            'ingredient' => $ingredient
-        ], Response::HTTP_OK, [], ['groups' => ['ingredient.index']]);
-
-    } catch (\Exception $e) {
-        // Log de l'exception
-        error_log("Exception: " . $e->getMessage());
-
-        return $this->json([
-            'error' => 'Erreur lors de la mise à jour de l\'ingrédient.',
-            'message' => $e->getMessage()
-        ], Response::HTTP_BAD_REQUEST);
     }
-}
+    
+    
 
 
     #[Route("/api/ingredient/delete/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['DELETE'])]
