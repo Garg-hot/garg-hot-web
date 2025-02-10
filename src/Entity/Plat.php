@@ -25,7 +25,7 @@ class Plat
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5, minMessage: 'Le nom doit contenir au moins 5 caractères')]
-    #[Groups(['plat.index','plat.create','categorie.index','commande.index'])]
+    #[Groups(['plat.index','plat.create','categorie.index','commande.index','commande.index', 'commande.show','vente.index', 'vente.show'])]
     private ?string $nom = '';
 
     #[ORM\Column(length: 255)]
