@@ -36,6 +36,7 @@ class Ingredient
 
     #[Assert\Type("integer")]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['ingredient.index', 'ingredient.create'])]
     private int $stock=0;
 
     public function __construct()
