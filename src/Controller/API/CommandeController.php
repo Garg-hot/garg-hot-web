@@ -54,20 +54,23 @@ class CommandeController extends AbstractController
         return $this->json($response, 200);
     }
     
-
-    #[Route("/api/commandes/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['GET'])]
-    public function show(int $id, CommandeRepository $commandeRepository): Response
+    #[Route("/api/commandes/client/{id_client}", methods: ['GET'])]
+    public function showByIdClient(string $id_client, CommandeRepository $commandeRepository): Response
     {
-        $commande = $commandeRepository->find($id);
+        // Recherche des commandes pour ce client
+        $commandes = $commandeRepository->findBy(['id_client' => $id_client]);
         
-        if (!$commande) {
-            return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
+        if (!$commandes) {
+            return $this->json(['error' => 'Aucune commande trouvée pour ce client'], Response::HTTP_NOT_FOUND);
         }
-
-        return $this->json($commande, 200, [], [
-            'groups' => ['commande.index']
+    
+        // Retour des commandes trouvées avec sérialisation
+        return $this->json($commandes, 200, [], [
+            'groups' => ['commande.index']  // Sérialisation pour inclure les informations souhaitées
         ]);
     }
+    
+    
     #[Route("/api/commandes/", methods: ['POST'])]
     public function create(
         Request $request,
@@ -130,27 +133,7 @@ class CommandeController extends AbstractController
     //         'groups' => ['commande.index']
     //     ]);
     // }
-
-<<<<<<< HEAD
-    #[Route("/api/commandes/{id_client}", methods: ['GET'])]
-    public function show(string $id_client, CommandeRepository $commandeRepository): Response
-    {
-        // Recherche de la commande par l'ID du client
-        $commandes = $commandeRepository->findBy(['id_client' => $id_client]);
     
-        if (!$commandes) {
-            return $this->json(['error' => 'Aucune commande trouvée pour ce client'], Response::HTTP_NOT_FOUND);
-        }
-    
-        return $this->json($commandes, 200, [], [
-            'groups' => ['commande.index']
-        ]);
-    }
-    
-    
-    
-=======
->>>>>>> parent of f2e193c (Update CommandeController)
     #[Route("/api/commandes/{id}", methods: ['DELETE'])]
     public function delete(Commande $commande, CommandeRepository $commandeRepository): Response
     {
