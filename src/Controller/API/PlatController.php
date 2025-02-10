@@ -84,9 +84,11 @@ class PlatController extends AbstractController
             $plat->setSlug(strtolower(str_replace(' ', '-', $data['nom'])));
             $plat->setDescription($data['description'] ?? null);
             $plat->setDuration($data['duration'] ?? null);
+            $plat->setImage($data['image'] ?? 'default-image.png');  // Valeur par défaut pour l'image
             $plat->setCreatedAt(new \DateTimeImmutable());
             $plat->setUpdatedAt(new \DateTimeImmutable());
             $plat->setCategorie($categorie);
+            
 
             // Gestion des ingrédients
             if (isset($data['ingredients']) && is_array($data['ingredients'])) {
