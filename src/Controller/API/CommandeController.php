@@ -56,8 +56,14 @@ class CommandeController extends AbstractController
     
 
     #[Route("/api/commandes/{id}", requirements: ['id' => Requirement::DIGITS], methods: ['GET'])]
-    public function show(Commande $commande): Response
+    public function show(int $id, CommandeRepository $commandeRepository): Response
     {
+        $commande = $commandeRepository->find($id);
+        
+        if (!$commande) {
+            return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($commande, 200, [], [
             'groups' => ['commande.index']
         ]);
