@@ -115,10 +115,6 @@ class IngredientController extends AbstractController
             if (count($errors) > 0) {
                 return $this->json($errors, Response::HTTP_BAD_REQUEST);
             }
-    
-            // Mise à jour de la date de modification
-            $ingredient->setUpdatedAt(new \DateTimeImmutable());
-    
             $entityManager->flush();
     
             return $this->json([
