@@ -54,21 +54,43 @@ class CommandeController extends AbstractController
         return $this->json($response, 200);
     }
     
-    #[Route("/api/commandes/client/{id_client}", methods: ['GET'])]
-    public function showByIdClient(string $id_client, CommandeRepository $commandeRepository): Response
+    #[Route("/api/commandes/{id}", methods: ['GET'])]
+    public function show(int $id, CommandeRepository $commandeRepository): Response
     {
-        // Recherche des commandes pour ce client
-        $commandes = $commandeRepository->findBy(['id_client' => $id_client]);
+        // Recherche de la commande par son ID
+        $commande = $commandeRepository->find($id);
         
-        if (!$commandes) {
-            return $this->json(['error' => 'Aucune commande trouvée pour ce client'], Response::HTTP_NOT_FOUND);
+        if (!$commande) {
+            return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
         }
-    
-        // Retour des commandes trouvées avec sérialisation
-        return $this->json($commandes, 200, [], [
-            'groups' => ['commande.index']  // Sérialisation pour inclure les informations souhaitées
-        ]);
+
+        // Transformation de la commande en réponse formatée
+        $plats = [];
+        foreach ($commande->getPlats() as $plat) {
+            $ingredients = [];
+            foreach ($plat->getIngredients() as $ingredient) {
+                // Ajout des ingrédients au plat
+                $ingredients[] = ['nom' => $ingredient->getNom()];
+            }
+            
+            // Transformation du plat pour ajouter le nom sous 'nom_plat'
+            $plats[] = [
+                'id' => $plat->getId(),
+                'nom_plat' => $plat->getNom(),
+                'ingredients' => $ingredients,
+            ];
+        }
+
+        // Structure de la réponse pour la commande avec les plats et ingrédients
+        return $this->json([
+            'commande_id' => $commande->getId(),
+            'createdAt' => $commande->getCreatedAt()->format('c'),  // format ISO8601
+            'statut' => $commande->getStatut(),
+            'id_client' => $commande->getIdClient(),
+            'plats' => $plats,
+        ], 200);
     }
+
     
     
     #[Route("/api/commandes/", methods: ['POST'])]
