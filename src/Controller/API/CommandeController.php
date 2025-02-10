@@ -51,20 +51,21 @@ class CommandeController extends AbstractController
         ]);
     }
 
-    #[Route("/api/commandes/{id}", methods: ['GET'])]
-    public function show(string $id, CommandeRepository $commandeRepository): Response
+    #[Route("/api/commandes/{id_client}", methods: ['GET'])]
+    public function show(string $id_client, CommandeRepository $commandeRepository): Response
     {
-        // Recherche de la commande par le token Firebase
-        $commande = $commandeRepository->findOneBy(['token' => $id]);
+        // Recherche de la commande par l'ID du client
+        $commandes = $commandeRepository->findBy(['id_client' => $id_client]);
     
-        if (!$commande) {
-            return $this->json(['error' => 'Commande non trouvée'], Response::HTTP_NOT_FOUND);
+        if (!$commandes) {
+            return $this->json(['error' => 'Aucune commande trouvée pour ce client'], Response::HTTP_NOT_FOUND);
         }
     
-        return $this->json($commande, 200, [], [
+        return $this->json($commandes, 200, [], [
             'groups' => ['commande.index']
         ]);
     }
+    
     
     
     #[Route("/api/commandes/{id}", methods: ['DELETE'])]
